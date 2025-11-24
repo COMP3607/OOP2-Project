@@ -1,4 +1,4 @@
 package org.example.FileImportTemplates;
 
-public class JSONImporter {
+public class JSONImporter extends FileImporter{
 }

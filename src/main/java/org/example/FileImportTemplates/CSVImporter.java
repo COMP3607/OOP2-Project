@@ -1,4 +1,4 @@
 package org.example.FileImportTemplates;
 
-public class CSVImporter {
+public class CSVImporter extends FileImporter{
 }

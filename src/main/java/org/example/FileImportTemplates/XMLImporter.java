@@ -1,4 +1,4 @@
 package org.example.FileImportTemplates;
 
-public class XMLImporter {
+public class XMLImporter extends FileImporter{
 }
