@@ -27,9 +27,9 @@ public class QuestionBuilder {
         return this;
     }
 
-    public JeopardyQuestion build() {
-        return new JeopardyQuestion(answer,prompt,category,value);
-    }
+   // public JeopardyQuestion build() {
+    //    return new JeopardyQuestion(answer,prompt,category,value);
+    //}
 
     public boolean validate(){
         return answer != null && !answer.isBlank() &&
