@@ -28,6 +28,8 @@ public class JeopardyQuestion
     public List<Option> getOptions() { return options; }
     public boolean isAnswered() { return isAnswered; }
     public int getValue() { return value; }
+    public void markAnswered() { this.isAnswered = true; }
+    public void reset() { this.isAnswered = false; }
     
     @Override
     public String toString()
