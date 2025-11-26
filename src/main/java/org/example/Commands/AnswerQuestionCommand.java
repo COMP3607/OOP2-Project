@@ -1,15 +1,37 @@
 package org.example.Commands;
 
+import org.example.Game.GameController;
+import org.example.Game.Player;
 import org.example.Question.JeopardyQuestion;
-import org.example.Question.Option;
 
-public class AnswerQuestionCommand implements Command{
-    private JeopardyQuestion question;
-    private Option option;
+public class AnswerQuestionCommand implements Command {
+    private final GameController controller;
+    private final JeopardyQuestion question;
+    private final int points;
+    private boolean applied = false;
 
+    public AnswerQuestionCommand(GameController controller,
+                                 JeopardyQuestion question) {
+        this.controller = controller;
+        this.question = question;
+        this.points = question.getValue();
+    }
 
-  public AnswerQuestionCommand(JeopardyQuestion question, Option option){
-    
-  }
-  
+    @Override
+    public void execute() {
+        Player p = controller.getCurrentPlayer();
+        int cur = p.getScore();
+        p.changeScore(cur + points);
+        question.markAnswered();
+        applied = true;
+    }
+
+    @Override
+    public void undo() {
+        if (!applied) return;
+        Player p = controller.getCurrentPlayer();
+        int cur = p.getScore();
+        p.changeScore(cur - points);
+        question.reset();
+    }
 }
