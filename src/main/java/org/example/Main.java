@@ -14,15 +14,9 @@ public class Main {
 
         String filename1 = "sample_game_JSON.json";
         FileImporter test = new JSONImporter();
-
         List<JeopardyQuestion> qtest = test.Questions(filename1);
-
         JeopardyGame newGame = new JeopardyGame(qtest);
-        newGame.printQuestions();
-        Player p = new Player("Josh");
-        newGame.addPlayer(p);
-        newGame.getPlayer(p.getName());
-        newGame.setPlayerCount(3);
+
 
         Scanner sc = new Scanner(System.in);
         System.out.println("Type GUI to launch the GUI Or 'Text' to continue in terminal");
