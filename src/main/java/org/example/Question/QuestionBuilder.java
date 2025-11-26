@@ -1,10 +1,13 @@
 package org.example.Question;
 
+import java.util.List;
+
 public class QuestionBuilder {
 
     String answer;
     String prompt;
     String category;
+    List<Option> options;
     boolean isAnswered = false;
     int value;
     public QuestionBuilder answer(String answer) {
@@ -27,9 +30,14 @@ public class QuestionBuilder {
         return this;
     }
 
-   // public JeopardyQuestion build() {
-    //    return new JeopardyQuestion(answer,prompt,category,value);
-    //}
+    public QuestionBuilder options(List<Option> options){
+        this.options = options;
+        return this;
+    }
+
+    public JeopardyQuestion build() {
+        return new JeopardyQuestion(answer,prompt,category,value,options);
+    }
 
     public boolean validate(){
         return answer != null && !answer.isBlank() &&
