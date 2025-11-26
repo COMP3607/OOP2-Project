@@ -27,13 +27,14 @@ public class JeopardyGame {
     public void addPlayer(Player p){
         playerScoreMap.put(p,0);
     }
-    public void getPlayer(String p){
+    public Player getPlayer(String p){
         for(Player player : this.playerScoreMap.keySet()){
             if(player.getName().equals(p)){
                 System.out.println("Player "+p+ " found");
-                return;
+                return player;
             }
         }
+        return null;
     }
 
     public void setPlayerCount(int playerCount){
