@@ -15,7 +15,7 @@ public class EndGameCommand implements Command{
     public void execute(){
         controller.endGame();
       System.out.println("\nThank you for playing Jeopardy! Final scores:");
-      DisplayScoresCommand(game).execute();
+      new DisplayScoresCommand(game).execute();
       System.out.println("\nGoodbye!\n");
       System.exit(0);
     }
