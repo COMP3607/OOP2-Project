@@ -14,7 +14,7 @@ public class JeopardyGameTest {
     @BeforeEach
     public void setUp() {
          importer = new JSONImporter();
-         game = new JeopardyGame(importer.Questions("sample_game.json"));
+         game = new JeopardyGame(importer.Questions("sample_game_JSON.json"));
          p = new Player("Josh");
     }
     @Test

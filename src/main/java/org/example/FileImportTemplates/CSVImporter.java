@@ -3,6 +3,7 @@ package org.example.FileImportTemplates;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -71,6 +72,10 @@ public class CSVImporter extends FileImporter
                 optionList.add(new Option("D", data[6]));
 
                 String answer = data[7];
+
+                if(!data[8].isEmpty()){
+                    throw new RuntimeException("Error parsing CSV: ");
+                }
 
                 JeopardyQuestion q = new JeopardyQuestion(answer, prompt, category, value, optionList);
 

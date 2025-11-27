@@ -5,7 +5,9 @@ import org.example.FileImportTemplates.CSVImporter;
 import org.example.FileImportTemplates.JSONImporter;
 import org.example.FileImportTemplates.XMLImporter;
 
+import org.example.Game.GameController;
 import org.example.Game.JeopardyGame;
+import org.example.Logging.GameEvent;
 import org.example.Question.JeopardyQuestion;
 
 import java.util.ArrayList;
@@ -20,16 +22,21 @@ public class LoadQuestionsFileCommand implements Command {
 
     private final JeopardyGame game;
     private final String filename;
-
+    private final GameController controller;
 
     private List<JeopardyQuestion> previousQuestions;
-
-
     private List<JeopardyQuestion> loadedQuestions;
 
     public LoadQuestionsFileCommand(JeopardyGame game, String filename) {
         this.game = game;
         this.filename = filename.trim();
+        this.controller = null;
+    }
+
+    public LoadQuestionsFileCommand(JeopardyGame game, String filename, GameController controller) {
+        this.game = game;
+        this.filename = filename.trim();
+        this.controller = controller;
     }
 
     @Override
@@ -52,6 +59,11 @@ public class LoadQuestionsFileCommand implements Command {
 
             System.out.println("SUCCESS: Loaded " + loadedQuestions.size() + " questions from " + filename);
             System.out.println("Ready to play!\n");
+            
+            if (game != null && game.getGameLogger() != null) {
+                GameEvent event = new GameEvent("Load File", "System", java.time.LocalDateTime.now(), filename, "Success");
+                game.getGameLogger().logGameEvent(event);
+            }
 
         } catch (Exception e) {
             // On failure: restore previous state immediately
