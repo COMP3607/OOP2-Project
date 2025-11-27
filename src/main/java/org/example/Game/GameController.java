@@ -25,6 +25,7 @@ public class GameController {
 
     /** Indicates whether the game has started */
     private boolean gameStarted;
+    private final JeopardyGame jeopardyGame;
 
     /**
      * Constructs a new GameController with an empty player list
@@ -35,6 +36,7 @@ public class GameController {
         this.commandHistory = new ArrayList<>();
         this.currentPlayerIndex = 0;
         this.gameStarted = false;
+        this.jeopardyGame = new JeopardyGame(new ArrayList<>());
     }
 
 
@@ -87,9 +89,17 @@ public class GameController {
         currentPlayerIndex = 0;
     }
 
+    
+    public void playerScored(Player player, int points) {
+        player.changeScore(points);
+        jeopardyGame.updatePlayerScore(player, points);
+    }
+
+
     /**
      * Ends the game by setting the game state to not started.
     */
+
     public void endGame() {
         gameStarted = false;
     }

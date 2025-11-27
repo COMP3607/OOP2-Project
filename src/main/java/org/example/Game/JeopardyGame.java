@@ -75,6 +75,10 @@ public class JeopardyGame {
     public int getPlayerScore(Player player) {
         return playerScoreMap.getOrDefault(player, 0);
     }
+
+    public void updatePlayerScore(Player player, int newScore) {
+        playerScoreMap.put(player, newScore);
+    }
     
     /**
      * Sets the total number of players in the game.
@@ -93,4 +97,6 @@ public class JeopardyGame {
     public List<JeopardyQuestion> getQuestions() {
         return this.questions;
     }
+
+    
 }
