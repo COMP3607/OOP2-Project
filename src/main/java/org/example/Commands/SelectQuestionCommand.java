@@ -1,48 +1,41 @@
 package org.example.Commands;
 
+import org.example.Game.JeopardyGame;
 import org.example.Game.Player;
+import org.example.Logging.GameEvent;
 import org.example.Question.JeopardyQuestion;
 import org.example.Question.Option;
 
-/**
- * A command that displays the details of a selected {@link JeopardyQuestion}
- * for the current player. 
- * 
- * <p>Executing this command prints the question category, value, clue, and
- * available answer options to the console. If the question has already been
- * answered, the command notifies the user and does nothing.</p>
- * 
- * <p>This command has no side effects on game state, and therefore its
- * {@link #undo()} method performs no action.</p>
- */
 public class SelectQuestionCommand implements Command {
-
-    /** The question being presented to the player. */
     private final JeopardyQuestion question;
-
-    /** The player currently selecting the question. */
     private final Player currentPlayer;
+    private final JeopardyGame game;
 
-    /**
-     * Creates a new SelectQuestionCommand.
-     *
-     * @param question the question the player is attempting to view
-     * @param currentPlayer the active player selecting the question
-     */
-    public SelectQuestionCommand(JeopardyQuestion question, Player currentPlayer) {
+    public SelectQuestionCommand(JeopardyQuestion question, Player currentPlayer, JeopardyGame game) {
         this.question = question;
         this.currentPlayer = currentPlayer;
+        this.game = game;
     }
 
-    /**
-     * Executes the command by printing the question details if it has not
-     * already been answered.
-     */
     @Override
     public void execute() {
         if (question.isAnswered()) {
             System.out.println("This question has already been answered!");
             return;
+        }
+
+        // Start a new turn and track category/question selection
+        if (game != null && currentPlayer != null) {
+            game.startTurn(currentPlayer);
+            game.setCurrentTurnCategory(question.getCategory());
+            game.setCurrentTurnQuestion(question);
+            
+            if (game.getGameLogger() != null) {
+                GameEvent event = new GameEvent("Select Question", currentPlayer.getName(), null, String.valueOf(question.getValue()), "N/A");
+                event.setCategory(question.getCategory());
+                event.setScoreAfterPlay(currentPlayer.getScore());
+                game.getGameLogger().logGameEvent(event);
+            }
         }
 
         System.out.println("\n" + "=".repeat(50));
@@ -58,11 +51,7 @@ public class SelectQuestionCommand implements Command {
         System.out.println("=".repeat(50));
     }
 
-    /**
-     * This command performs no state changes, so undoing has no effect.
-     */
     @Override
     public void undo() {
-        // No operation
     }
 }

@@ -1,84 +1,67 @@
 package org.example.Commands;
 
 import org.example.Game.GameController;
+import org.example.Game.JeopardyGame;
 import org.example.Game.Player;
+import org.example.Logging.GameEvent;
 import org.example.Question.JeopardyQuestion;
 import org.example.Question.Option;
 
-/**
- * A command that processes a player's multiple-choice answer for a
- * {@link JeopardyQuestion}. 
- * 
- * <p>The command determines whether the selected option is correct, updates
- * the player's score, and marks the question as answered. Undoing the
- * command restores the previous score and resets the question state.</p>
- * 
- * <p>This command is single-use — it cannot be executed more than once
- * or executed on a question that is already marked as answered.</p>
- */
 public class AnswerQuestionCommand implements Command {
-
-    /** Controller that manages overall game flow and player state. */
-    private final GameController controller;
-
-    /** The question being answered. */
     private final JeopardyQuestion question;
-
-    /** The number of points associated with the question. */
     private final int points;
-
-    /** The label of the option chosen by the player (e.g., "A", "B", "C", "D"). */
-    private final String userChoice;
-
-    /** Tracks whether the command has already been applied. */
+    private final String userChoice; // This is a label like "A", "B", "C", "D"
     private boolean applied = false;
-
-    /** Whether the player's answer was correct during execution. */
     private boolean wasCorrect = false;
-
-    /** How much the player's score changed (positive or negative). */
     private int scoreChange = 0;
+    private Player player = null;
+    private JeopardyGame game = null;
+    private GameController controller = null;
+    private String answerText = null;
 
-    /**
-     * Creates a new AnswerQuestionCommand.
-     *
-     * @param controller the active game controller
-     * @param question the question being answered
-     * @param choice the option label selected by the user (e.g., "A")
-     */
-    public AnswerQuestionCommand(GameController controller,
+    public boolean wasCorrect() {
+        return wasCorrect;
+    }
+
+    public AnswerQuestionCommand(Player player,
                                  JeopardyQuestion question, String choice) {
-        this.controller = controller;
+        this.player = player;
         this.question = question;
         this.points = question.getValue();
         this.userChoice = choice;
     }
 
-    /**
-     * Executes the command by validating the chosen option, determining
-     * correctness, updating the player's score, and marking the question
-     * as answered.
-     * <p>
-     * If the command has already been executed or the question was
-     * previously answered, the operation is ignored.
-     *
-     * @throws IllegalStateException if no current player exists
-     */
+    public AnswerQuestionCommand(Player player,
+                                 JeopardyQuestion question, String choice, JeopardyGame game) {
+        this.player = player;
+        this.question = question;
+        this.points = question.getValue();
+        this.userChoice = choice;
+        this.game = game;
+        this.controller = null;
+    }
+
+    public AnswerQuestionCommand(Player player,
+                                 JeopardyQuestion question, String choice, JeopardyGame game, GameController controller) {
+        this.player = player;
+        this.question = question;
+        this.points = question.getValue();
+        this.userChoice = choice;
+        this.game = game;
+        this.controller = controller;
+    }
+
     @Override
     public void execute() {
         if (applied || question.isAnswered()) {
             return;
         }
-
-        Player p = controller.getCurrentPlayer();
-        if (p == null) {
+        if (player == null) {
             throw new IllegalStateException("No current player available");
         }
 
-        int currentScore = p.getScore();
+        int currentScore = player.getScore();
         String correctAnswer = question.getAnswer();
-
-        // Find the option corresponding to the user's choice
         Option selectedOption = null;
         for (Option opt : question.getOptions()) {
             if (opt.getLabel().equalsIgnoreCase(userChoice != null ? userChoice.trim() : "")) {
@@ -87,39 +70,56 @@ public class AnswerQuestionCommand implements Command {
             }
         }
 
-        // Determine correctness by comparing labels OR full text
+
         if (selectedOption != null && correctAnswer != null) {
             String answerTrimmed = correctAnswer.trim();
+            //unsure which we'd account for so just check  for both for now
+            //change later
             String labelTrimmed = selectedOption.getLabel().trim();
             String textTrimmed = selectedOption.getText().trim();
 
-            wasCorrect = answerTrimmed.equalsIgnoreCase(labelTrimmed)|| 
+            wasCorrect = answerTrimmed.equalsIgnoreCase(labelTrimmed) ||
                         answerTrimmed.equalsIgnoreCase(textTrimmed);
+            answerText = selectedOption.getText();
         } else {
             wasCorrect = false;
+            answerText = userChoice; // Fallback to the choice label
         }
 
         scoreChange = wasCorrect ? points : -points;
-        p.changeScore(currentScore + scoreChange);
+        player.changeScore(scoreChange);
+        int newScore = player.getScore();
         question.markAnswered();
+        
+        if (controller != null && player != null) {
+            System.out.println("Score updated for " + player.getName() + 
+                ": " + (scoreChange >= 0 ? "+" : "") + scoreChange + 
+                " points. New score: $" + newScore);
+        }
+        
+        // Complete the turn and log it
+        if (game != null) {
+            game.completeTurn(userChoice, answerText, wasCorrect, scoreChange);
+            
+            if (game.getGameLogger() != null) {
+                GameEvent event = new GameEvent("Answer Question", player.getName(), null, answerText, wasCorrect ? "Correct" : "Incorrect");
+                event.setCategory(question.getCategory());
+                event.setScoreAfterPlay(newScore);
+                game.getGameLogger().logGameEvent(event);
+            }
+        }
+        
         applied = true;
     }
 
-    /**
-     * Undoes the command by restoring the player's previous score and
-     * resetting the question to its unanswered state.
-     * <p>
-     * If the command has not been applied, this method does nothing.
-     */
     @Override
     public void undo() {
         if (!applied) return;
-        Player p = controller.getCurrentPlayer();
-        if (p == null) {
+        if (player == null) {
             return;
         }
-        int currentScore = p.getScore();
-        p.changeScore(currentScore - scoreChange);
+        int currentScore = player.getScore();
+        player.changeScore(currentScore - scoreChange);
         question.reset();
         applied = false;
         wasCorrect = false;

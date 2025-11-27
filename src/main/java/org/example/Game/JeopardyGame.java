@@ -1,102 +1,149 @@
 package org.example.Game;
 
+import org.example.Logging.EventLogger;
+import org.example.Logging.GameLogger;
+import org.example.Logging.ReportGenerator;
 import org.example.Question.JeopardyQuestion;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-/**
- * Represents a Jeopardy game, including the questions and tracking scores for each player.
-*/
 public class JeopardyGame {
-
-    /** Mapping from Player to their current score */
-    private HashMap<Player,Integer> playerScoreMap;
-
-    /** Number of players in the game */
-    int playerCount;
+    private static int gameCounter = 0;
     
-    /** List of questions for the game */
+    private HashMap<Player,Integer> playerScoreMap;
+    private int playerCount;
     private List<JeopardyQuestion> questions;
+    private GameLogger gameLogger;
+    private int currentTurnNumber;
+    private JeopardyTurn currentJeopardyTurn;
 
-    /**
-     * Constructs a JeopardyGame with a predefined list of questions.
-     * 
-     * @param questions the List of JeopardyQuestion objects
-    */
+
     public JeopardyGame(List<JeopardyQuestion> questions){
         this.playerScoreMap = new HashMap<Player,Integer>();
         this.questions = questions;
         this.playerCount = 1;
+        this.currentTurnNumber = 0;
+        String caseID = "GAME" + String.format("%03d", gameCounter);
+        this.gameLogger = new GameLogger(caseID);
+        gameCounter++;
     }
 
-    /**
-     * Prints all questions to the console.
-    */
-    public void printQuestions(){
-        for(JeopardyQuestion q : this.questions){
-            System.out.println(q);
-        }
-    }
 
-    /**
-     * Adds a player to the game and initializes their score to 0.
-     * 
-     * @param p the Player to add
-    */
     public void addPlayer(Player p){
         playerScoreMap.put(p,0);
     }
-    public Player getPlayer(String name) {
-        for (Player player : playerScoreMap.keySet()) {
-            if (player.getName().equalsIgnoreCase(name)) {
+    public Player getPlayer(String p){
+        for(Player player : this.playerScoreMap.keySet()){
+            if(player.getName().equals(p)){
                 return player;
             }
         }
         return null;
     }
-
-    /**
-     * Returns all players in the game.
-     * 
-     * @return a List of Player objects
-    */
     public List<Player> getAllPlayers() {
         return new ArrayList<>(playerScoreMap.keySet());
     }
-
-    /**
-     * Retrieves the current score for a player.
-     * 
-     * @param player the Player whose score is requested
-     * @return the integer score; 0 if the player is not found
-    */
     public int getPlayerScore(Player player) {
         return playerScoreMap.getOrDefault(player, 0);
     }
-
-    public void updatePlayerScore(Player player, int newScore) {
-        playerScoreMap.put(player, newScore);
-    }
     
-    /**
-     * Sets the total number of players in the game.
-     * 
-     * @param playerCount the number of players
-    */
     public void setPlayerCount(int playerCount){
         this.playerCount = playerCount;
     }
 
-    /**
-     * Returns the list of questions in the game.
-     * 
-     * @return a List of JeopardyQuestion objects
-    */
     public List<JeopardyQuestion> getQuestions() {
         return this.questions;
     }
 
-    
+    /**
+     * Starts a new turn for the given player.
+     */
+    public JeopardyTurn startTurn(Player player) {
+        currentTurnNumber++;
+        currentJeopardyTurn = new JeopardyTurn(currentTurnNumber, player);
+        gameLogger.addPlayer(player);
+        return currentJeopardyTurn;
+    }
+
+    /**
+     * Gets the current turn being played.
+     */
+    public JeopardyTurn getCurrentTurn() {
+        return currentJeopardyTurn;
+    }
+
+    /**
+     * Sets the category for the current turn.
+     */
+    public void setCurrentTurnCategory(String category) {
+        if (currentJeopardyTurn != null) {
+            currentJeopardyTurn.setCategory(category);
+        }
+    }
+
+    /**
+     * Sets the question for the current turn.
+     */
+    public void setCurrentTurnQuestion(JeopardyQuestion question) {
+        if (currentJeopardyTurn != null) {
+            currentJeopardyTurn.setQuestion(question);
+        }
+    }
+
+    /**
+     * Completes the current turn with answer information and logs it.
+     */
+    public void completeTurn(String selectedAnswer, String answerText, boolean isCorrect, int pointsAwarded) {
+        if (currentJeopardyTurn != null) {
+            currentJeopardyTurn.setAnswer(selectedAnswer, answerText, isCorrect, pointsAwarded);
+            gameLogger.logEvent(currentJeopardyTurn);
+            currentJeopardyTurn = null; // Clear current turn after logging
+        }
+    }
+
+    /**
+     * Gets the game logger for generating reports.
+     */
+    public GameLogger getGameLogger() {
+        return gameLogger;
+    }
+
+    /**
+     * Gets the event logger interface.
+     * 
+     * @return The EventLogger instance
+     */
+    public EventLogger getEventLogger() {
+        return gameLogger;
+    }
+
+    public void generateReport(String filename) throws IOException {
+        ReportGenerator generator = new ReportGenerator(gameLogger);
+        generator.saveReport(filename);
+    }
+
+    public void generateEventLog(String filename) throws IOException {
+        ReportGenerator generator = new ReportGenerator(gameLogger);
+        generator.saveEventLog(filename);
+    }
+
+    public String getHumanReadableReport() {
+        ReportGenerator generator = new ReportGenerator(gameLogger);
+        return generator.generateHumanReadableReport();
+    }
+
+    public boolean areAllQuestionsAnswered() {
+        if (questions == null || questions.isEmpty()) {
+            return false;
+        }
+        for (JeopardyQuestion question : questions) {
+            if (!question.isAnswered()) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
