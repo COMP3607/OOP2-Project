@@ -41,6 +41,10 @@ public class JeopardyGame {
     public int getPlayerScore(Player player) {
         return playerScoreMap.getOrDefault(player, 0);
     }
+
+    public void updatePlayerScore(Player player, int newScore) {
+        playerScoreMap.put(player, newScore);
+    }
     
     public void setPlayerCount(int playerCount){
         this.playerCount = playerCount;
@@ -49,4 +53,6 @@ public class JeopardyGame {
     public List<JeopardyQuestion> getQuestions() {
         return this.questions;
     }
+
+    
 }

@@ -12,12 +12,14 @@ public class GameController {
     private ArrayList<Player> players;
     private int currentPlayerIndex;
     private boolean gameStarted;
+    private final JeopardyGame jeopardyGame;
 
     public GameController(){
         this.players = new ArrayList<>();
         this.commandHistory = new ArrayList<>();
         this.currentPlayerIndex = 0;
         this.gameStarted = false;
+        this.jeopardyGame = new JeopardyGame(new ArrayList<>());
     }
 
     public void addPlayer(Player player) {
@@ -45,7 +47,11 @@ public class GameController {
         gameStarted = true;
         currentPlayerIndex = 0;
     }
-
+    
+    public void playerScored(Player player, int points) {
+        player.changeScore(points);
+        jeopardyGame.updatePlayerScore(player, points);
+    }
     public void endGame() {
         gameStarted = false;
     }
