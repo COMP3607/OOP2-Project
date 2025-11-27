@@ -73,7 +73,7 @@ public class CSVImporter extends FileImporter
 
                 String answer = data[7];
 
-                if(!data[8].isEmpty()){
+                if(data[7].isEmpty()){
                     throw new RuntimeException("Error parsing CSV: ");
                 }
 

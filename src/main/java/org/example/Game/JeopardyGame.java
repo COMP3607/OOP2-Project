@@ -46,8 +46,13 @@ public class JeopardyGame {
     public List<Player> getAllPlayers() {
         return new ArrayList<>(playerScoreMap.keySet());
     }
+
     public int getPlayerScore(Player player) {
         return playerScoreMap.getOrDefault(player,0);
+    }
+
+    public int getPlayerCount() {
+        return playerCount;
     }
     
     public void setPlayerCount(int playerCount){
