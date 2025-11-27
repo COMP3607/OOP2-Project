@@ -1,6 +1,6 @@
-#OOP2 Project
+OOP2 Project
 
-#Group Members
+Group Members
 ``Josh Cabral``
 ``Bryan Bajoon``
 ``Juantivan Vialva``
