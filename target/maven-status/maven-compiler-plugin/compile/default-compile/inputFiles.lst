@@ -20,7 +20,7 @@
 /home/runner/workspace/src/main/java/org/example/Commands/SelectQuestionCommand.java
 /home/runner/workspace/src/main/java/org/example/FileImportTemplates/FileImporter.java
 /home/runner/workspace/src/main/java/org/example/UI/QuestionBoard.java
-/home/runner/workspace/src/main/java/org/example/Commands/AnswerQuestionCommand.java
 /home/runner/workspace/src/main/java/org/example/Commands/LoadQuestionsFileCommand.java
+/home/runner/workspace/src/main/java/org/example/Commands/AnswerQuestionCommand.java
 /home/runner/workspace/src/main/java/org/example/Commands/PrintQuestionsCommand.java
 /home/runner/workspace/src/main/java/org/example/Commands/DisplayScoresCommand.java
