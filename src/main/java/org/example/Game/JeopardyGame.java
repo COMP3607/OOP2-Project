@@ -129,10 +129,8 @@ public class JeopardyGame {
         ReportGenerator generator = new ReportGenerator(gameLogger);
         generator.saveEventLog(filename);
     }
-
-    public String getHumanReadableReport() {
-        ReportGenerator generator = new ReportGenerator(gameLogger);
-        return generator.generateHumanReadableReport();
+    public void updatePlayerScore(Player player, int newScore) {
+        playerScoreMap.put(player, newScore);
     }
 
     public boolean areAllQuestionsAnswered() {
