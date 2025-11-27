@@ -15,7 +15,6 @@ public class Main {
         GameController tempController = new GameController(newGame);
         LoadQuestionsFileCommand loadCmd = new LoadQuestionsFileCommand(newGame, filename1, tempController);
         tempController.executeCommand(loadCmd);
-
         Scanner sc = new Scanner(System.in);
         GameController controller = new GameController(newGame, sc);
         controller.runCLIGame();
