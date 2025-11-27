@@ -48,17 +48,9 @@ public class JeopardyGame {
     public void addPlayer(Player p){
         playerScoreMap.put(p,0);
     }
-
-    /**
-     * Retrieves a Player by name.
-     * 
-     * @param p the name of the Player to find
-     * @return the Player object if found; otherwise null
-    */
-    public Player getPlayer(String p){
-        for(Player player : this.playerScoreMap.keySet()){
-            if(player.getName().equals(p)){
-                System.out.println("Player "+p+ " found");
+    public Player getPlayer(String name) {
+        for (Player player : playerScoreMap.keySet()) {
+            if (player.getName().equalsIgnoreCase(name)) {
                 return player;
             }
         }
